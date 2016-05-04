@@ -1,0 +1,46 @@
+
+#container {
+  margin: 5vw;
+}
+
+header {
+  font-size: 1em;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:link, a:visited {
+  color: rgb(100, 180, 255);
+}
+
+a:hover {
+  color: hotpink;
+}
+
+#interests li {
+  margin: 1vh;
+}
+
+.skill_list {
+  display: inline-block;
+}
+
+#education li {
+  margin: 1.5vh;
+}
+
+#education li li{
+  margin-top: 0.5vh;
+  margin-bottom: 0.5vh;
+}
+
+#experience li {
+    margin: 1.5vh;
+}
+
+#experience li li{
+  margin-top: 0.5vh;
+  margin-bottom: 0.5vh;
+}

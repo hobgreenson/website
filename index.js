@@ -1,20 +1,26 @@
-var express = require('express');
-var app = express();
 
-app.set('port', (process.env.PORT || 5000));
+var fs = require('fs');
+var http = require('http');
+var marked = require('marked');
+var express = require('express');
+
+var app = express();
+app.disable('x-powered-by'); // for security
 
 app.use(express.static(__dirname + '/public'));
 
-// views is directory for all template files
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-
-app.get('/', function(request, response) {
-  response.render('pages/index');
+// Rout to CV
+app.get('/test.md', function(req, res) {
+    var file = fs.readFile('test.md', 'utf8', function(err, data) {
+        if (err) {
+            console.log(err);
+            res.status(404).end('Page not found!');
+        }
+        res.end(marked(data.toString()));
+    });
 });
 
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});
+var server = http.createServer(app);
+server.listen(8080);
 
 

@@ -1,0 +1,97 @@
+
+
+Notes on Heroku with Node.js
+
+Heroku lets you deploy run and manage apps
+
+app = source code + dependency description
+
+in Node, the dependency description is "package.json"
+
+heroku needs to know what parts of your app are runnable,
+in node this is the "main" field on package.json
+
+for some apps, you may need to explicity declare what can be executed. you do
+this in a "Procfile". Procfiles list process types = named commands that you
+may want executed.
+
+heroku uses git to deploy applications. when you create an app, heroku
+associates a new git remote, typically named heroku, with the local repo for
+your app.
+
+you deploy code using:
+    git push heroku master
+
+when heroku receives the app source, it starts a build of the source app. the
+source code for your app, the fetched dependencies and the output of the build
+phase such as generated assets of compiled code, as well as the laniage and
+framework, are assembled into a "slug".
+
+heroku executes apps by running a command you specified in the Procfile, on a
+"dyno" that's been preloaded with you slug.
+
+think of a dyno as a lightweight, secure, virtualized Unix container that
+contains your app flug in its filesystem.
+
+generally, when you deploy an app for the first time, heroku will run 1 web
+dyno automatically. you can control over how many dynos are running at any
+given time. for example, to use 3 dynos for the web by
+
+    heroku ps:scale web=3
+
+your app's "dyno formation" is the total number of currently-executing dynos,
+divided between the various process types you have scaled. you can see what's
+executing using:
+
+    heroku ps
+
+an app's "config vars" detail everything that is likely to vary between
+environments (staging, production, developer environments). you can change
+config vars by:
+
+    heroku config:set POOP=1234
+
+at runtime your app can extract config vars programatically.
+
+the combination of your slug and config vars is called a "release". every time
+you deploy a new version of an app, a new slug is created and a release is
+generated. you can see your releases using:
+    
+    heroku releases
+
+you can rollback to a previous release using e.g.:
+
+    heroku releases:rollback v102
+
+every time you change your config vars, a new release is generated.
+
+the "dyno manager" is responsible for keeping dynos running.
+
+heroku logs all events. see them using:
+
+    heroku logs
+
+you can see logs from a single dyno:
+
+    heroku logs --ps web.1 --tail
+
+---------------------------------------------------------------------------------
+
+Creating a staging environment:
+
+assume you have an app working on your local machine and you're ready to push
+it to heroku. we need to create both a staging and production environment.
+first create the staging:
+
+heroku create --remote staging
+
+and push the app:
+
+git push staging master
+
+to make the production environment, do:
+
+heroku create --remote production
+git push production master
+
+

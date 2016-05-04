@@ -1,0 +1,35 @@
+
+nav {
+  font-size: 1.5em;
+  margin: 5vw;
+  text-align: center;
+}
+
+#greeting {
+  font-size: 1em;
+  text-align: center;
+  margin: 8vw;
+}
+
+#about_content {
+  font-size: 1em;
+  margin: 8vw;
+}
+
+a {
+  text-decoration: none;
+}
+
+nav a {
+  margin: 2vw;
+}
+
+a:link, a:visited {
+  color: rgb(100, 180, 255);
+}
+
+a:hover {
+  color: hotpink;
+}
+
+
