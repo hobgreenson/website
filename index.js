@@ -6,6 +6,7 @@ var express = require('express');
 
 var app = express();
 app.disable('x-powered-by'); // for security
+app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(__dirname + '/public'));
 
@@ -21,6 +22,6 @@ app.get('/test.md', function(req, res) {
 });
 
 var server = http.createServer(app);
-server.listen(8080);
+server.listen(app.get('port'));
 
 
