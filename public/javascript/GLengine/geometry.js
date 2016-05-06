@@ -1,10 +1,9 @@
 
 
 function Vertex() {
-    this.length   = 12;
+    this.length   = 8;
     this.position = new Vector(3);
     this.normal   = new Vector(3);
-    this.color    = new Vector(4);
     this.texture  = new Vector(2);
 }
 
@@ -70,45 +69,6 @@ Vertex.prototype = {
         this.set_nz(sz);
     },
     
-    r: function() {
-        return this.color.data[0];
-    },
-
-    g: function() {
-        return this.color.data[1];
-    },
-
-    b: function() {
-        return this.color.data[2];
-    },
-
-    a: function() {
-        return this.color.data[3];
-    },
-
-    set_r: function(red) {
-        this.color.data[0] = red;
-    },
-
-    set_g: function(green) {
-        this.color.data[1] = green;
-    },
-
-    set_b: function(blue) {
-        this.color.data[2] = blue;
-    },
-
-    set_a: function(alpha) {
-        this.color.data[3] = alpha;
-    },
-
-    set_rgba: function(red, green, blue, alpha) {
-        this.set_r(red);
-        this.set_g(green);
-        this.set_b(blue);
-        this.set_a(alpha);
-    },
-    
     u: function() {
         return this.texture.data[0];
     },
@@ -160,12 +120,8 @@ Mesh.prototype = {
             this.vertex_data[j + 3] = v.nx();
             this.vertex_data[j + 4] = v.ny();
             this.vertex_data[j + 5] = v.nz();
-            this.vertex_data[j + 6] = v.r();
-            this.vertex_data[j + 7] = v.g();
-            this.vertex_data[j + 8] = v.b();
-            this.vertex_data[j + 9] = v.a();
-            this.vertex_data[j + 10] = v.u();
-            this.vertex_data[j + 11] = v.v();
+            this.vertex_data[j + 6] = v.u();
+            this.vertex_data[j + 7] = v.v();
             j += this.vertex_length;
         }
     },
@@ -222,57 +178,6 @@ Geometry.prototype = {
     */
 }
 
-function platos_triangle(mesh) {
-
-    var v = [];
-    for (var i = 0; i < 3; i++) {
-        v.push(new Vertex());
-    }
-    v[0].set_xyz(0, 0.5, 0);
-    v[1].set_xyz(-0.5, 0, 0);
-    v[2].set_xyz(0.5, 0, 0);
-    for (i = 0; i < 3; i++) {
-        v[i].set_nxyz(0, 0, -1);
-    }
-
-    var idx = [0, 1, 2];
-
-    mesh.set_vertex_data(v);
-    mesh.set_index_data(idx);
-}
-
-function unit_square(mesh) {
-    var v = [];
-    for (var i = 0; i < 4; i++) {
-        v.push(new Vertex());
-    }
-    v[0].set_xyz(-0.5, -0.5, 0);
-    v[0].set_nxyz(0, 0, -1);
-    v[0].set_uv(0.0, 0.0);
-    v[0].set_rgba(1, 1, 1, 1);
-    
-    v[1].set_xyz(0.5, -0.5, 0);
-    v[1].set_nxyz(0, 0, -1);
-    v[1].set_uv(1.0, 0.0);
-    v[1].set_rgba(1, 1, 1, 1);
-    
-    v[2].set_xyz(0.5, 0.5, 0);
-    v[2].set_nxyz(0, 0, -1);
-    v[2].set_uv(1.0, 1.0);
-    v[2].set_rgba(1, 1, 1, 1);
-    
-    v[3].set_xyz(-0.5, 0.5, 0);
-    v[3].set_nxyz(0, 0, -1);
-    v[3].set_uv(0.0, 1.0);
-    v[3].set_rgba(1, 1, 1, 1);
-    
-    var idx = [0, 1, 2, 0, 2, 3];
-
-    mesh.set_vertex_data(v);
-    mesh.set_index_data(idx);
-
-}
-
 function cylinder(mesh, height, radius, theta_step, capped, half, color) {
     /*
         - height, h_step, raidus, in world coordinates
@@ -280,7 +185,6 @@ function cylinder(mesh, height, radius, theta_step, capped, half, color) {
         - radius = can be uniform (a single number or
         an array with length = h_steps + 1
     */
-    
 
     if (typeof radius === 'number') {
         var r = radius,
@@ -462,7 +366,6 @@ function unit_cube(mesh) {
     v[i + 3].set_xyz( r, -r, r);
     for (j = i; j < i + 4; j++) {
         v[j].set_nxyz(0, 0, 1);
-        v[j].set_rgba(0, 0, 0, 1);
     }
 
     // right
@@ -473,7 +376,6 @@ function unit_cube(mesh) {
     v[i + 3].set_xyz(r,  r, -r);
     for (j = i; j < i + 4; j++) {
         v[j].set_nxyz(1, 0, 0);
-        v[j].set_rgba(1, 0, 0, 1);
     }
     
     // up
@@ -484,7 +386,6 @@ function unit_cube(mesh) {
     v[i + 3].set_xyz(-r,  r,  r);
     for (j = i; j < i + 4; j++) {
         v[j].set_nxyz(0, 1, 0);
-        v[j].set_rgba(1, 1, 0, 1);
     }
    
     // left
@@ -495,7 +396,6 @@ function unit_cube(mesh) {
     v[i + 3].set_xyz(-r, -r,  r);
     for (j = i; j < i + 4; j++) {
         v[j].set_nxyz(-1, 0, 0);
-        v[j].set_rgba(0, 0, 1, 1);
     }
     
     // down 
@@ -506,7 +406,6 @@ function unit_cube(mesh) {
     v[i + 3].set_xyz(-r, -r,  r);
     for (j = i; j < i + 4; j++) {
         v[j].set_nxyz(0, -1, 0);
-        v[j].set_rgba(1, 0, 1, 1);
     }
     
     // back 
@@ -517,7 +416,6 @@ function unit_cube(mesh) {
     v[i + 3].set_xyz( r,  r, -r);
     for (j = i; j < i + 4; j++) {
         v[j].set_nxyz(0, 0, -1);
-        v[j].set_rgba(0, 1, 1, 1);
     }
     
     var idx = [

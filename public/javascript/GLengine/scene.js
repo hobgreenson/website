@@ -4,7 +4,7 @@ function Scene(shader, texture, geometry) {
     this.texture = texture;
     this.geometry = geometry;
     this.entity_buffer = [];
-    this.u_PV = Mat4(); // projection * view matrix
+    this.u_P = Mat4(); // projection matrix
 }
 
 Scene.prototype = {
@@ -22,16 +22,14 @@ Scene.prototype = {
                 mesh = this.geometry.mesh_buffer[entity.mesh_name]; 
 
             gl.useProgram(program.program); 
-            gl.uniformMatrix4fv(program.u_PV, false, this.u_PV.data);
+            gl.uniformMatrix4fv(program.u_P, false, this.u_P.data);
             gl.uniformMatrix4fv(program.u_M, false, entity.u_M.data); 
-            if (program.u_Offset) {
-                gl.uniform1f(program.u_Offset, this.tex_offset);
-            }
 
             var vlen = mesh.vertex_length,
                 nbytes = mesh.FSIZE;
 
             gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vertex_buffer_id);
+            
             if (program.a_Position >= 0) {
                 gl.enableVertexAttribArray(program.a_Position);
                 gl.vertexAttribPointer(program.a_Position, 3, gl.FLOAT, 
@@ -39,18 +37,13 @@ Scene.prototype = {
             }
             if (program.a_Normal >= 0) {
                 gl.enableVertexAttribArray(program.a_Normal);
-                gl.vertexAttribPointer(program.a_normal, 3, gl.FLOAT, 
+                gl.vertexAttribPointer(program.a_Normal, 3, gl.FLOAT, 
                                        false, vlen * nbytes, 3 * nbytes)
-            }
-            if (program.a_Color >= 0) {
-                gl.enableVertexAttribArray(program.a_Color);
-                gl.vertexAttribPointer(program.a_Color, 4, gl.FLOAT, 
-                                       false, vlen * nbytes, 6 * nbytes)
             }
             if (program.a_Texture >= 0) {
                 gl.enableVertexAttribArray(program.a_Texture);
                 gl.vertexAttribPointer(program.a_Texture, 2, gl.FLOAT, 
-                                       false, vlen * nbytes, 10 * nbytes)
+                                       false, vlen * nbytes, 6 * nbytes)
             }
             if (entity.texture_name) {
                 var tex = this.texture.texture_buffer[entity.texture_name];
@@ -58,8 +51,8 @@ Scene.prototype = {
                 gl.bindTexture(gl.TEXTURE_2D, tex.tex_id);
                 gl.uniform1i(program.u_Sampler, 0);
             }
+            
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.index_buffer_id);
-                
             gl.drawElements(gl.TRIANGLES, mesh.n_indices, gl.UNSIGNED_BYTE, 0);
         }
     }

@@ -15,17 +15,15 @@ Shader.prototype = {
         // get attribute locations
         program_object.a_Position = gl.getAttribLocation(program_object.program, "a_Position");
         program_object.a_Normal = gl.getAttribLocation(program_object.program, "a_Normal");
-        program_object.a_Color = gl.getAttribLocation(program_object.program, "a_Color");
         program_object.a_Texture = gl.getAttribLocation(program_object.program, "a_Texture");
     
         // get uniform locations
         program_object.u_M = gl.getUniformLocation(program_object.program, 'u_M');
-        program_object.u_PV = gl.getUniformLocation(program_object.program, 'u_PV');
+        program_object.u_P = gl.getUniformLocation(program_object.program, 'u_P');
         program_object.u_Sampler = gl.getUniformLocation(program_object.program, 'u_Sampler');
         program_object.u_DiffuseLight = gl.getUniformLocation(program_object.program, 'u_DiffuseLight');
         program_object.u_LightDirection = gl.getUniformLocation(program_object.program, 'u_LightDirection');
         program_object.u_AmbientLight = gl.getUniformLocation(program_object.program, 'u_AmbientLight');
-        program_object.u_Offset = gl.getUniformLocation(program_object.program, 'u_Offset'); 
         
         this.program_buffer[name] = program_object;
     },

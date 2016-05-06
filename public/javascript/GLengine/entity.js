@@ -3,8 +3,8 @@ function Entity() {
     this.program_name = null;
     this.mesh_name    = null;
     this.texture_name = null;
-    this.quat         = new Quat(0, 0, 1, 0);
-    this.u_M          = Mat4();
+    this.u_M = Mat4()
+    this.quat = Quat(1, 0, 0, 0);
 }
 
 Entity.prototype = { 
@@ -32,6 +32,6 @@ Entity.prototype = {
     },
 
     quat_rotate: function() {
-        this.u_M = mmult(this.u_M, this.quat.to_matrix());
+        this.u_M = MatMult(this.u_M, this.quat.to_matrix());
     }
 }
