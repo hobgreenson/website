@@ -18,8 +18,7 @@ Shader.prototype = {
         program_object.a_Texture = gl.getAttribLocation(program_object.program, "a_Texture");
     
         // get uniform locations
-        program_object.u_M = gl.getUniformLocation(program_object.program, 'u_M');
-        program_object.u_P = gl.getUniformLocation(program_object.program, 'u_P');
+        program_object.u_PM = gl.getUniformLocation(program_object.program, 'u_PM');
         program_object.u_Sampler = gl.getUniformLocation(program_object.program, 'u_Sampler');
         program_object.u_DiffuseLight = gl.getUniformLocation(program_object.program, 'u_DiffuseLight');
         program_object.u_LightDirection = gl.getUniformLocation(program_object.program, 'u_LightDirection');

@@ -6,8 +6,6 @@ function main() {
     if (!gl) {
         console.log('Failed to initialize OpenGL context!');
     } 
-    var cw = canvas.width,
-        ch = canvas.height;
      
     // init shaders 
     var shader = new Shader();
@@ -21,27 +19,16 @@ function main() {
     var geometry = new Geometry();
     geometry.add_mesh('player1', function(mesh) {
         return unit_cube(mesh); 
-        /*return cylinder(mesh,
-                        4,
-                        1,
-                        10,
-                        true,
-                        false,
-                        [0.3, 0.3, 0.3, 1.0]
-                       );
-        */
     });
 
-    // init entities
+    // init player1
     var player1 = new Entity();
     player1.program_name = 'simple';
     player1.mesh_name = 'player1';
-    var T = Translate4(0, 0, -3); 
-    player1.u_M = MatMult(T, player1.u_M);
+    player1.u_T = Translate4(0, 0, -3); 
 
     // init scene
-    var scene = new Scene(shader, texture, geometry);
-    scene.u_P = Perspective(90, cw / ch, 0.1, 1000);
+    var scene = new Scene(canvas, shader, texture, geometry);
     scene.add_entity(player1);
     
     // keyboard and mouse event handling
@@ -86,8 +73,6 @@ function main() {
         var ax = cross(mouse_vec, z_axis);
         var W = Quat(1, ax.x(), ax.y(), ax.z());
         player1.quat = QuatMult(W, player1.quat);
-        player1.u_M = player1.quat.to_matrix();
-        player1.u_M = MatMult(T, player1.u_M); 
     };
 
     // set some gl state
@@ -107,8 +92,7 @@ function main() {
         dt = t_curr - t_prev;
         t_prev = t_curr;
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        resize(gl);
-        scene.draw();
+        scene.draw(canvas);
         requestAnimationFrame(tick, canvas);
     }
     tick();

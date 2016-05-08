@@ -1,10 +1,10 @@
 
-function Scene(shader, texture, geometry) {
+function Scene(canvas, shader, texture, geometry) {
     this.shader = shader;
     this.texture = texture;
     this.geometry = geometry;
     this.entity_buffer = [];
-    this.u_P = Mat4(); // projection matrix
+    this.u_P = Perspective(90, canvas.width / canvas.height, 1, 100)
 }
 
 Scene.prototype = {
@@ -13,7 +13,10 @@ Scene.prototype = {
         this.entity_buffer.push(entity);
     },
 
-    draw: function() {
+    draw: function(canvas) {
+        
+        resize(gl);
+        setPerspective(this.u_P, 90, canvas.width / canvas.height, 1, 100)
 
         for (var i = 0; i < this.entity_buffer.length; i++) {
                 
@@ -22,8 +25,7 @@ Scene.prototype = {
                 mesh = this.geometry.mesh_buffer[entity.mesh_name]; 
 
             gl.useProgram(program.program); 
-            gl.uniformMatrix4fv(program.u_P, false, this.u_P.data);
-            gl.uniformMatrix4fv(program.u_M, false, entity.u_M.data); 
+            gl.uniformMatrix4fv(program.u_PM, false, MatMult(this.u_P, entity.get_M()).data);
 
             var vlen = mesh.vertex_length,
                 nbytes = mesh.FSIZE;

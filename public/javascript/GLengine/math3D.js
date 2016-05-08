@@ -345,16 +345,26 @@ function zRotation(theta) {
 function Perspective(fovy, aspect, near, far) {
     var P = new Matrix(4, 4);
     P.zeros();
-    fovy = deg2rad(fovy) / 2;
-    var s = Math.sin(fovy);
-    var rd = 1 / (far - near);
-    var ct = Math.cos(fovy) / s;
+    fovy = (Math.PI - deg2rad(fovy)) * 0.5;
+    var ct = Math.tan(fovy);
+    var rd = 1.0 / (near - far);
     P.data[0]  = ct / aspect;
     P.data[5]  = ct;
-    P.data[10] = -(far + near) * rd;
+    P.data[10] = (far + near) * rd;
     P.data[11] = -1;
-    P.data[14] = -2 * near * far * rd;
+    P.data[14] = 2 * near * far * rd;
     return P;
+}
+
+function setPerspective(P, fovy, aspect, near, far) {
+    fovy = (Math.PI - deg2rad(fovy)) * 0.5;
+    var ct = Math.tan(fovy);
+    var rd = 1.0 / (near - far);
+    P.data[0]  = ct / aspect;
+    P.data[5]  = ct;
+    P.data[10] = (far + near) * rd;
+    P.data[11] = -1;
+    P.data[14] = 2 * near * far * rd;
 }
 
 function LookAt(eye, center, up) {
@@ -431,15 +441,18 @@ Quaternion.prototype = {
         
         var M = Mat4();
         
-        M.data[M.ix(0, 0)] = 1 - 2 * y * y - 2 * z * z;
-        M.data[M.ix(0, 1)] = 2 * x * y - 2 * z * w;
-        M.data[M.ix(0, 2)] = 2 * x * z + 2 * y * w;
-        M.data[M.ix(1, 0)] = 2 * x * y + 2 * z * w;
-        M.data[M.ix(1, 1)] = 1 - 2 * x * x - 2 * z * z;
-        M.data[M.ix(1, 2)] = 2 * y * z - 2 * x * w;
-        M.data[M.ix(2, 0)] = 2 * x * z - 2 * y * w;
-        M.data[M.ix(2, 1)] = 2 * y * z + 2 * z * w;
-        M.data[M.ix(2, 2)] = 1 - 2 * x * x - 2 * y * y;
+        // diagonal
+        M.data[M.ix(0, 0)] = 1 - 2 * (y * y + z * z);
+        M.data[M.ix(1, 1)] = 1 - 2 * (x * x + z * z);
+        M.data[M.ix(2, 2)] = 1 - 2 * (x * x + y * y);
+        // upper triangle 
+        M.data[M.ix(0, 1)] = 2 * (x * y - z * w);
+        M.data[M.ix(0, 2)] = 2 * (x * z + y * w);
+        M.data[M.ix(1, 2)] = 2 * (y * z - x * w);
+        // lower triangle 
+        M.data[M.ix(1, 0)] = 2 * (x * y + z * w);
+        M.data[M.ix(2, 0)] = 2 * (x * z - y * w);
+        M.data[M.ix(2, 1)] = 2 * (y * z + x * w);
        
         return M;
     }

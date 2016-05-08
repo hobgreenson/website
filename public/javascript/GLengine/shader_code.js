@@ -4,12 +4,11 @@ function simple_vert() {
     'attribute vec3 a_Position;\n' +
     'attribute vec3 a_Normal;\n' +
     'attribute vec2 a_Texture;\n' +
-    'uniform mat4 u_M;\n' +
-    'uniform mat4 u_P;\n' +
+    'uniform mat4 u_PM;\n' +
     'varying vec4 v_Color;\n' +
     'varying vec2 v_Texture;\n' +
     'void main() {\n' +
-    '   gl_Position =  u_P * u_M * vec4(a_Position, 1.0);\n' +
+    '   gl_Position =  u_PM * vec4(a_Position, 1.0);\n' +
     '   v_Color = vec4(abs(a_Normal), 1);\n' +
     '   v_Texture = a_Texture;\n' +
     '}\n'
