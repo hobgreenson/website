@@ -90,7 +90,7 @@ function main() {
     }, false);
 
     canvas.addEventListener("touchmove", function(e) {
-        if (!is_touching) {
+        if (!ui.is_touching) {
             return;
         }
         ui.curr_x = e.touches[0].clientX;
