@@ -78,6 +78,7 @@ function main() {
     
     // touch events
     canvas.addEventListener("touchstart", function(e) {
+        e.preventDefault();
         ui.is_touching = true;
         ui.prev_x = e.touches[0].clientX;
         ui.prev_y = e.touches[0].clientY;
@@ -85,11 +86,13 @@ function main() {
         ui.vel.set_y(0); 
     }, false);
     
-    canvas.addEventListener("touchend", function(e) {
+    canvas.addEventListener("touchend", function(e) {a
+        e.preventDefault();
         ui.is_touching = false;
     }, false);
 
     canvas.addEventListener("touchmove", function(e) {
+        e.preventDefault();
         if (!ui.is_touching) {
             return;
         }
