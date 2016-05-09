@@ -4,10 +4,14 @@ function Shader() {
 }
 
 Shader.prototype = {
+    
+    constructor: Shader,
 
     add_program: function(name, vshader, fshader) {
+        
         var program_object = {};
-        program_object.program = this.createProgram(vshader(), fshader());
+        program_object.program = this.createProgram(vshader(), fshader())
+
         if (!program_object.program) {
             console.log("Failed to create GLSL program");
         }
@@ -75,9 +79,6 @@ Shader.prototype = {
         return shader;
     }
 }
-
-
-
 
 
 

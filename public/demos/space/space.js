@@ -30,50 +30,83 @@ function main() {
     // init scene
     var scene = new Scene(canvas, shader, texture, geometry);
     scene.add_entity(player1);
-    
-    // keyboard and mouse event handling
-    document.onkeydown = function(e) {
+
+    // user-interface event handling
+    var ui = {
+        prev_x: 0,
+        prev_y: 0,
+        curr_x: 0,
+        curr_y: 0,
+        dx: 0,
+        dy: 0,
+        z_axis: Vec3(0, 0, -1),
+        mouse_is_down: false,
+        vel: Vec3(0, 0, 0),
     };
     
-    var mouse_down = false,
-        prev_x = 0,
-        prev_y = 0,
-        curr_x = 0,
-        curr_y = 0,
-        dx = 0,
-        dy = 0,
-        mouse_vec = Vec3(0, 0, 0),
-        z_axis = Vec3(0, 0, -1),
-        W = new Quat(0, 0, 1, 0);
-       
-    canvas.onmousedown = function (e) {
-        mouse_down = true;
-        prev_x = e.clientX;
-        prev_y = e.clientY;
-        mouse_vec.set_x(0);
-        mouse_vec.set_y(0);
-    };
-    
-    document.onmouseup = function (e) {
-        mouse_down = false;
-    };
-    
-    document.onmousemove = function (e) {
-        if (!mouse_down) {
+    // mouse events
+    canvas.addEventListener("mousedown", function(e) {
+        ui.mouse_is_down = true;
+        ui.prev_x = e.clientX;
+        ui.prev_y = e.clientY;
+        ui.vel.set_x(0);
+        ui.vel.set_y(0);
+    }, false);
+
+    document.addEventListener("mouseup", function(e) {
+        ui.mouse_is_down = false;
+    }, false);    
+
+    document.addEventListener("mousemove", function(e) {
+        if (!ui.mouse_is_down) {
             return;
         }
-        curr_x = e.clientX;
-        curr_y = e.clientY;
-        dx = curr_x - prev_x;
-        dy = prev_y - curr_y; // flips y-axis 
-        prev_x = curr_x;
-        prev_y = curr_y;
-        mouse_vec.set_x(dx);
-        mouse_vec.set_y(dy);
-        var ax = cross(mouse_vec, z_axis);
+        ui.curr_x = e.clientX;
+        ui.curr_y = e.clientY;
+        ui.dx = ui.curr_x - ui.prev_x;
+        ui.dy = ui.prev_y - ui.curr_y; // flips y-axis 
+        ui.prev_x = ui.curr_x;
+        ui.prev_y = ui.curr_y;
+        ui.vel.set_x(ui.dx);
+        ui.vel.set_y(ui.dy);
+        var ax = cross(ui.vel, ui.z_axis);
         var W = Quat(1, ax.x(), ax.y(), ax.z());
-        player1.quat = QuatMult(W, player1.quat);
-    };
+        for (var i = 0; i < scene.entity_buffer.length; i++) {
+            scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
+        }
+    }, false);
+    
+    // touch events
+    canvas.addEventListener("touchstart", function(e) {
+        ui.is_touching = true;
+        ui.prev_x = e.touches[0].clientX;
+        ui.prev_y = e.touches[0].clientY;
+        ui.vel.set_x(0);
+        ui.vel.set_y(0); 
+    }, false);
+    
+    canvas.addEventListener("touchend", function(e) {
+        ui.is_touching = false;
+    }, false);
+
+    canvas.addEventListener("touchmove", function(e) {
+        if (!is_touching) {
+            return;
+        }
+        ui.curr_x = e.touches[0].clientX;
+        ui.curr_y = e.touches[0].clientY;
+        ui.dx = ui.curr_x - ui.prev_x;
+        ui.dy = ui.prev_y - ui.curr_y; // flips y-axis 
+        ui.prev_x = ui.curr_x;
+        ui.prev_y = ui.curr_y;
+        ui.vel.set_x(ui.dx);
+        ui.vel.set_y(ui.dy);
+        var ax = cross(ui.vel, ui.z_axis);
+        var W = Quat(1, ax.x(), ax.y(), ax.z());
+        for (var i = 0; i < scene.entity_buffer.length; i++) {
+            scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
+        } 
+    }, false);
 
     // set some gl state
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
