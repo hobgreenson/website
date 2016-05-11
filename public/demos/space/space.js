@@ -9,29 +9,27 @@ function main() {
      
     // init shaders 
     var shader = new Shader();
-    //shader.add_program('background', background_vert, background_frag);
+    shader.add_program('background', background_vert, background_frag);
     shader.add_program('simple', simple_vert, simple_frag);
 
     // init texture
     var texture = new Texture(); 
-    //texture.add_texture('hubble_space', '/resources/hubble_friday.jpg');
+    texture.add_texture('hubble_space', '/resources/hubble_friday.jpg');
 
     // init geometry
     var geometry = new Geometry();
-    //geometry.add_mesh('background', function(mesh) {
-    //    return unit_square(mesh); 
-    //});
+    geometry.add_mesh('background', function(mesh) {
+        return unit_square(mesh); 
+    });
     geometry.add_mesh('cube', function(mesh) {
         return unit_cube(mesh); 
     });
     
     // init background
-    /*
     var background = new Entity();
     background.program_name = 'background';
     background.mesh_name = 'background';
     background.texture_name = 'hubble_space';
-    */
 
     // init player1
     var player1 = new Entity();
@@ -65,7 +63,7 @@ function main() {
 
     // init scene
     var scene = new Scene(canvas, shader, texture, geometry);
-    //scene.add_entity(background);
+    scene.add_entity(background);
     scene.add_entity(player1);
     scene.add_entity(player2); 
     scene.add_entity(player3);
@@ -113,7 +111,7 @@ function main() {
         var ax = cross(ui.vel, ui.z_axis)
         ax.normalize();
         var W = Quat(Math.sqrt(ui.vel.norm2()), ax.x(), ax.y(), ax.z());
-        for (var i = 0; i < scene.entity_buffer.length; i++) {
+        for (var i = 1; i < scene.entity_buffer.length; i++) {
             scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
         }
     }, false);
@@ -149,7 +147,7 @@ function main() {
         var ax = cross(ui.vel, ui.z_axis)
         ax.normalize();
         var W = Quat(Math.sqrt(ui.vel.norm2()), ax.x(), ax.y(), ax.z());
-        for (var i = 0; i < scene.entity_buffer.length; i++) {
+        for (var i = 1; i < scene.entity_buffer.length; i++) {
             scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
         } 
     }, false);

@@ -348,16 +348,16 @@ function unit_square(mesh) {
         v.push(new Vertex());
     }
     
-    v[0].set_xyz(1, 1, 0);
+    v[0].set_xyz(1, 1, 0.99);
     v[0].set_uv(1, 1);
 
-    v[1].set_xyz(1, -1, 0);
+    v[1].set_xyz(1, -1, 0.99);
     v[1].set_uv(1, 0);
     
-    v[2].set_xyz(-1, -1, 0);
+    v[2].set_xyz(-1, -1, 0.99);
     v[2].set_uv(0, 0);
 
-    v[3].set_xyz(-1, 1, 0);
+    v[3].set_xyz(-1, 1, 0.99);
     v[3].set_uv(0, 1);
     
     var idx = [0, 3, 1, 1, 3, 2];
