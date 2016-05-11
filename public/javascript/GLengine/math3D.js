@@ -70,15 +70,15 @@ Vector.prototype = {
         for (var i = 0; i < this.n; i++) {
             s += this.data[i] * this.data[i];
         }
-        return Math.sqrt(s);
+        return s;
     },
 
     normalize: function() {
         var s = this.norm2();
         if (Math.abs(s) > 0.0001 && Math.abs(s - 1.0) > 0.0001) {
-            s = Math.sqrt(s);
-            for (i = 0; i < this.n; i++) {
-                this.data[i] /= s;
+            var ss = Math.sqrt(s);
+            for (var i = 0; i < this.n; i++) {
+                this.data[i] /= ss;
             }
         }
     },

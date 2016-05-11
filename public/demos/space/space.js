@@ -69,8 +69,9 @@ function main() {
         ui.prev_y = ui.curr_y;
         ui.vel.set_x(ui.dx);
         ui.vel.set_y(ui.dy);
-        var ax = cross(ui.vel, ui.z_axis);
-        var W = Quat(1, ax.x(), ax.y(), ax.z());
+        var ax = cross(ui.vel, ui.z_axis)
+        ax.normalize();
+        var W = Quat(Math.sqrt(ui.vel.norm2()), ax.x(), ax.y(), ax.z());
         for (var i = 0; i < scene.entity_buffer.length; i++) {
             scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
         }
@@ -104,8 +105,9 @@ function main() {
         ui.prev_y = ui.curr_y;
         ui.vel.set_x(ui.dx);
         ui.vel.set_y(ui.dy);
-        var ax = cross(ui.vel, ui.z_axis);
-        var W = Quat(1, ax.x(), ax.y(), ax.z());
+        var ax = cross(ui.vel, ui.z_axis)
+        ax.normalize();
+        var W = Quat(Math.sqrt(ui.vel.norm2()), ax.x(), ax.y(), ax.z());
         for (var i = 0; i < scene.entity_buffer.length; i++) {
             scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
         } 
