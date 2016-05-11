@@ -125,6 +125,12 @@ Vector.prototype = {
 
 /********* Convenience functions for making common vectors *************/
 
+function Vec2(x, y) {
+    var v = new Vector(2);
+    v.from_data([x, y]);
+    return v;
+}
+
 function Vec3(x, y, z) {
     var v = new Vector(3);
     v.from_data([x, y, z]);

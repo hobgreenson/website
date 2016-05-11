@@ -27,11 +27,22 @@ function simple_frag() {
     return src;
 }
 
-function simple_tex_frag() {
+function background_vert() {
+    var src =
+    'attribute vec3 a_Position;\n' +
+    'attribute vec2 a_Texture;\n' +
+    'varying vec2 v_Texture;\n' +
+    'void main() {\n' +
+    '   gl_Position =  vec4(a_Position, 1.0);\n' +
+    '   v_Texture = a_Texture;\n' +
+    '}\n'
+    return src;
+}
+
+function background_frag() {
     var src =
     'precision mediump float;\n' +
     'uniform sampler2D u_Sampler;\n' + 
-    'varying vec4 v_Color;\n' +
     'varying vec2 v_Texture;\n' +
     'void main() {\n' +
     '   gl_FragColor = texture2D(u_Sampler, v_Texture);\n' +

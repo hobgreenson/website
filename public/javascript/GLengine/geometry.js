@@ -2,9 +2,9 @@
 
 function Vertex() {
     this.length   = 8;
-    this.position = new Vector(3);
-    this.normal   = new Vector(3);
-    this.texture  = new Vector(2);
+    this.position = Vec3(0, 0, 0);
+    this.normal   = Vec3(0, 0, 0);
+    this.texture  = Vec2(0, 0);
 }
 
 Vertex.prototype = {
@@ -342,6 +342,29 @@ function cylinder(mesh, height, radius, theta_step, capped, half, color) {
 
 }
 
+function unit_square(mesh) {
+    var v = [];
+    for (var i = 0; i < 4; i++) {
+        v.push(new Vertex());
+    }
+    
+    v[0].set_xyz(1, 1, 0);
+    v[0].set_uv(1, 1);
+
+    v[1].set_xyz(1, -1, 0);
+    v[1].set_uv(1, 0);
+    
+    v[2].set_xyz(-1, -1, 0);
+    v[2].set_uv(0, 0);
+
+    v[3].set_xyz(-1, 1, 0);
+    v[3].set_uv(0, 1);
+    
+    var idx = [0, 3, 1, 1, 3, 2];
+
+    mesh.set_vertex_data(v);
+    mesh.set_index_data(idx);
+}
 
 function unit_cube(mesh) {
     /*

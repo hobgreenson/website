@@ -10,8 +10,8 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(__dirname + '/public'));
 
-// Rout to CV
-app.get('/test.md', function(req, res) {
+/*
+app.get('/resources/hubble_friday.jpg', function(req, res) {
     var file = fs.readFile('test.md', 'utf8', function(err, data) {
         if (err) {
             console.log(err);
@@ -20,6 +20,7 @@ app.get('/test.md', function(req, res) {
         res.end(marked(data.toString()));
     });
 });
+*/
 
 var server = http.createServer(app);
 server.listen(app.get('port'));
