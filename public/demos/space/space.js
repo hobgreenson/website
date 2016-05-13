@@ -1,5 +1,11 @@
 function main() {
     
+    // Socket.IO
+    var socket = io();
+    /*socket.on('move', function() {
+        console.log('poop')
+    });*/
+
     // init WebGL context
     var canvas = document.getElementById('glcanvas');
     var gl = initWebGL(canvas);
@@ -82,7 +88,15 @@ function main() {
         mouse_is_down: false,
         vel: Vec3(0, 0, 0),
     };
-    
+
+    // socket events
+    socket.on('move', function(data) {
+        var W = Quat(data.vel, data.x, data.y, data.z);
+        for (var i = 1; i < scene.entity_buffer.length; i++) {
+            scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
+        }  
+    });
+
     // mouse events
     canvas.addEventListener("mousedown", function(e) {
         ui.mouse_is_down = true;
@@ -110,10 +124,13 @@ function main() {
         ui.vel.set_y(ui.dy);
         var ax = cross(ui.vel, ui.z_axis)
         ax.normalize();
-        var W = Quat(Math.sqrt(ui.vel.norm2()), ax.x(), ax.y(), ax.z());
+        var v = Math.sqrt(ui.vel.norm2());
+        var W = Quat(v, ax.x(), ax.y(), ax.z());
         for (var i = 1; i < scene.entity_buffer.length; i++) {
             scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
         }
+        socket.emit('move', {vel: v, x: ax.x(), y: ax.y(), z: ax.z()});
+    
     }, false);
     
     // touch events
