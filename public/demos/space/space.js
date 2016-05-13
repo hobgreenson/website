@@ -166,7 +166,8 @@ function main() {
         var W = Quat(Math.sqrt(ui.vel.norm2()), ax.x(), ax.y(), ax.z());
         for (var i = 1; i < scene.entity_buffer.length; i++) {
             scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
-        } 
+        }
+        socket.emit('move', {vel: v, x: ax.x(), y: ax.y(), z: ax.z()});
     }, false);
 
     // set some gl state
