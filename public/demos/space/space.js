@@ -163,7 +163,8 @@ function main() {
         ui.vel.set_y(ui.dy);
         var ax = cross(ui.vel, ui.z_axis)
         ax.normalize();
-        var W = Quat(Math.sqrt(ui.vel.norm2()), ax.x(), ax.y(), ax.z());
+        var v = Math.sqrt(ui.vel.norm2());
+        var W = Quat(v, ax.x(), ax.y(), ax.z());
         for (var i = 1; i < scene.entity_buffer.length; i++) {
             scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
         }
