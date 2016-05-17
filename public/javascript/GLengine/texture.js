@@ -1,10 +1,8 @@
-/***************** Texture loading ****************/
-function Texture() {
-    this.texture_buffer = {};
-}
 
-Texture.prototype = {
+Texture = {
     
+    texture_buffer: {},
+
     image_handler: function(texture) {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture.tex_id);
@@ -16,15 +14,15 @@ Texture.prototype = {
     },
 
     add_texture: function(name, src) {
-        var texture = {
+        var tex = {
             tex_id: gl.createTexture(),
             image: new Image() 
         };
-        var h = this.image_handler;
-        texture.image.onload = function() {
-            h(texture);
+        var h = Texture.image_handler;
+        tex.image.onload = function() {
+            h(tex);
         };
-        texture.image.src = src;
-        this.texture_buffer[name] = texture;
+        tex.image.src = src;
+        Texture.texture_buffer[name] = tex;
     }
 }

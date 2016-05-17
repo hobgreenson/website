@@ -1,27 +1,40 @@
 
-function Scene(canvas, shader, texture, geometry) {
-    this.shader = shader;
-    this.texture = texture;
-    this.geometry = geometry;
-    this.entity_buffer = [];
-    this.u_P = Perspective(90, canvas.width / canvas.height, 1, 100)
-}
+Scene = {
 
-Scene.prototype = {
+    entity_buffer: [],
+
+    u_P: null,
 
     add_entity: function(entity) {
-        this.entity_buffer.push(entity);
+        Scene.entity_buffer.push(entity);
+    },
+
+    resize: function() {
+        
+        var real_to_CSS_pix = window.devicePixelRatio || 1;
+
+        var display_width  = Math.floor(gl.canvas.clientWidth) * real_to_CSS_pix,
+            display_height = Math.floor(gl.canvas.clientHeight) * real_to_CSS_pix;
+
+        if (gl.canvas.width != display_width ||
+            gl.canvas.height != display_height) {
+
+            gl.canvas.width = display_width;
+            gl.canvas.height = display_height;
+
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        }
     },
     
     draw: function(entity) {
         
-        var program = this.shader.program_buffer[entity.program_name],
-            mesh = this.geometry.mesh_buffer[entity.mesh_name];
+        var program = Shader.program_buffer[entity.program_name],
+            mesh = Geometry.mesh_buffer[entity.mesh_name];
         
         gl.useProgram(program.program);
             
         if (program.u_PM) {
-            gl.uniformMatrix4fv(program.u_PM, false, MatMult(this.u_P, entity.get_M()).data);
+            gl.uniformMatrix4fv(program.u_PM, false, MatMult(Scene.u_P, entity.get_M()).data);
         }
 
         var vlen = mesh.vertex_length,
@@ -45,7 +58,7 @@ Scene.prototype = {
                                    false, vlen * nbytes, 6 * nbytes)
         }
         if (entity.texture_name) {
-            var tex = this.texture.texture_buffer[entity.texture_name];
+            var tex = Texture.texture_buffer[entity.texture_name];
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, tex.tex_id);
             gl.uniform1i(program.u_Sampler, 0);
@@ -55,11 +68,11 @@ Scene.prototype = {
         gl.drawElements(gl.TRIANGLES, mesh.n_indices, gl.UNSIGNED_BYTE, 0);
     },
 
-    draw_all: function(canvas) {
-        resize(gl);
-        setPerspective(this.u_P, 90, canvas.width / canvas.height, 1, 100)
-        for (var i = 0; i < this.entity_buffer.length; i++) {
-            this.draw(this.entity_buffer[i]);
+    draw_all: function() {
+        Scene.resize();
+        setPerspective(Scene.u_P, 90, gl.canvas.width / gl.canvas.height, 1, 100)
+        for (var i = 0; i < Scene.entity_buffer.length; i++) {
+            Scene.draw(Scene.entity_buffer[i]);
         }
     }
 }

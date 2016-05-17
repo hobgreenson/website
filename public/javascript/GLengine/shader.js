@@ -1,16 +1,13 @@
 
-function Shader() {
-    this.program_buffer = {};
-}
 
-Shader.prototype = {
+Shader = {
     
-    constructor: Shader,
+    program_buffer: {},
 
     add_program: function(name, vshader, fshader) {
         
         var program_object = {};
-        program_object.program = this.createProgram(vshader(), fshader())
+        program_object.program = Shader.createProgram(vshader(), fshader())
 
         if (!program_object.program) {
             console.log("Failed to create GLSL program");
@@ -28,12 +25,13 @@ Shader.prototype = {
         program_object.u_LightDirection = gl.getUniformLocation(program_object.program, 'u_LightDirection');
         program_object.u_AmbientLight = gl.getUniformLocation(program_object.program, 'u_AmbientLight');
         
-        this.program_buffer[name] = program_object;
+        Shader.program_buffer[name] = program_object;
     },
 
     createProgram: function(vshader, fshader) {
-        var vertex_shader = this.load_shader(gl.VERTEX_SHADER, vshader),
-            fragment_shader = this.load_shader(gl.FRAGMENT_SHADER, fshader);
+
+        var vertex_shader = Shader.load_shader(gl.VERTEX_SHADER, vshader),
+            fragment_shader = Shader.load_shader(gl.FRAGMENT_SHADER, fshader);
     
         if (!vertex_shader || !fragment_shader) {
             return null;
@@ -59,6 +57,7 @@ Shader.prototype = {
     },
 
     load_shader: function(type, src) {
+
         var shader = gl.createShader(type);
         if (shader === null) {
             console.log("unable to create shader");

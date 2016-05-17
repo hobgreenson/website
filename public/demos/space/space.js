@@ -1,175 +1,59 @@
+
 function main() {
     
-    // Socket.IO
-    var socket = io();
-    /*socket.on('move', function() {
-        console.log('poop')
-    });*/
-
     // init WebGL context
-    var canvas = document.getElementById('glcanvas');
-    var gl = initWebGL(canvas);
+    var gl = initWebGL(document.getElementById('glcanvas'));
     if (!gl) {
         console.log('Failed to initialize OpenGL context!');
-    } 
-     
-    // init shaders 
-    var shader = new Shader();
-    shader.add_program('background', background_vert, background_frag);
-    shader.add_program('simple', simple_vert, simple_frag);
+    }
 
-    // init texture
-    var texture = new Texture(); 
-    texture.add_texture('hubble_space', '/resources/hubble_friday.jpg');
-
-    // init geometry
-    var geometry = new Geometry();
-    geometry.add_mesh('background', function(mesh) {
-        return unit_square(mesh); 
-    });
-    geometry.add_mesh('cube', function(mesh) {
-        return unit_cube(mesh); 
-    });
+    // Set the initial perspective matrix using canvas aspect ratio
+    Scene.u_P = Perspective(90, gl.canvas.width / gl.canvas.height, 1, 100); 
     
-    // init background
+    // Make some shaders
+    Shader.add_program('background', background_vert, background_frag);
+    Shader.add_program('simple', simple_vert, simple_frag);
+
+    // Load a texture
+    Texture.add_texture('hubble_space', '/resources/hubble_friday.jpg');
+
+    // Make some meshes
+    Geometry.add_mesh('background', unit_square);
+    Geometry.add_mesh('cube', unit_cube); 
+    
+    // Make a background entity
     var background = new Entity();
     background.program_name = 'background';
     background.mesh_name = 'background';
     background.texture_name = 'hubble_space';
-
-    // init player1
-    var player1 = new Entity();
-    player1.program_name = 'simple';
-    player1.mesh_name = 'cube';
-    player1.u_T = Translate4(0, 0, -2); 
+    Scene.add_entity(background);
     
-    // init player2
-    var player2 = new Entity();
-    player2.program_name = 'simple';
-    player2.mesh_name = 'cube';
-    player2.u_T = Translate4(0, -3, -6);
+    // Init players
+    for (var i = 0; i < 5; i++) {
+        var p = new Entity();
+        p.program_name = 'simple';
+        p.mesh_name = 'cube';
+        Scene.add_entity(p);
+    }
+
+    // Translate players into position (sorry this is ugly) 
+    Scene.entity_buffer[1].u_T = Translate4(0, 0, -2); 
+    Scene.entity_buffer[2].u_T = Translate4(0, -3, -6);
+    Scene.entity_buffer[3].u_T = Translate4(0, 3, -6);
+    Scene.entity_buffer[4].u_T = Translate4(-3, 0, -6);
+    Scene.entity_buffer[5].u_T = Translate4(3, 0, -6);
     
-    // init player3
-    var player3 = new Entity();
-    player3.program_name = 'simple';
-    player3.mesh_name = 'cube';
-    player3.u_T = Translate4(0, 3, -6);
+    // Socket.IO event handling
+    UI.socket = io();
+    UI.socket.on('move', UI.sock_move);
 
-    // init player4
-    var player4 = new Entity();
-    player4.program_name = 'simple';
-    player4.mesh_name = 'cube';
-    player4.u_T = Translate4(-3, 0, -6);
-    
-    // init player5
-    var player5 = new Entity();
-    player5.program_name = 'simple';
-    player5.mesh_name = 'cube';
-    player5.u_T = Translate4(3, 0, -6);
-
-    // init scene
-    var scene = new Scene(canvas, shader, texture, geometry);
-    scene.add_entity(background);
-    scene.add_entity(player1);
-    scene.add_entity(player2); 
-    scene.add_entity(player3);
-    scene.add_entity(player4); 
-    scene.add_entity(player5);
-
-    // user-interface event handling
-    var ui = {
-        prev_x: 0,
-        prev_y: 0,
-        curr_x: 0,
-        curr_y: 0,
-        dx: 0,
-        dy: 0,
-        z_axis: Vec3(0, 0, -1),
-        mouse_is_down: false,
-        vel: Vec3(0, 0, 0),
-    };
-
-    // socket events
-    socket.on('move', function(data) {
-        var W = Quat(data.vel, data.x, data.y, data.z);
-        for (var i = 1; i < scene.entity_buffer.length; i++) {
-            scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
-        }  
-    });
-
-    // mouse events
-    canvas.addEventListener("mousedown", function(e) {
-        ui.mouse_is_down = true;
-        ui.prev_x = e.clientX;
-        ui.prev_y = e.clientY;
-        ui.vel.set_x(0);
-        ui.vel.set_y(0);
-    }, false);
-
-    document.addEventListener("mouseup", function(e) {
-        ui.mouse_is_down = false;
-    }, false);    
-
-    document.addEventListener("mousemove", function(e) {
-        if (!ui.mouse_is_down) {
-            return;
-        }
-        ui.curr_x = e.clientX;
-        ui.curr_y = e.clientY;
-        ui.dx = ui.curr_x - ui.prev_x;
-        ui.dy = ui.prev_y - ui.curr_y; // flips y-axis 
-        ui.prev_x = ui.curr_x;
-        ui.prev_y = ui.curr_y;
-        ui.vel.set_x(ui.dx);
-        ui.vel.set_y(ui.dy);
-        var ax = cross(ui.vel, ui.z_axis)
-        ax.normalize();
-        var v = Math.sqrt(ui.vel.norm2());
-        var W = Quat(v, ax.x(), ax.y(), ax.z());
-        for (var i = 1; i < scene.entity_buffer.length; i++) {
-            scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
-        }
-        socket.emit('move', {vel: v, x: ax.x(), y: ax.y(), z: ax.z()});
-    
-    }, false);
-    
-    // touch events
-    canvas.addEventListener("touchstart", function(e) {
-        e.preventDefault();
-        ui.is_touching = true;
-        ui.prev_x = e.touches[0].clientX;
-        ui.prev_y = e.touches[0].clientY;
-        ui.vel.set_x(0);
-        ui.vel.set_y(0); 
-    }, false);
-    
-    canvas.addEventListener("touchend", function(e) {a
-        e.preventDefault();
-        ui.is_touching = false;
-    }, false);
-
-    canvas.addEventListener("touchmove", function(e) {
-        e.preventDefault();
-        if (!ui.is_touching) {
-            return;
-        }
-        ui.curr_x = e.touches[0].clientX;
-        ui.curr_y = e.touches[0].clientY;
-        ui.dx = ui.curr_x - ui.prev_x;
-        ui.dy = ui.prev_y - ui.curr_y; // flips y-axis 
-        ui.prev_x = ui.curr_x;
-        ui.prev_y = ui.curr_y;
-        ui.vel.set_x(ui.dx);
-        ui.vel.set_y(ui.dy);
-        var ax = cross(ui.vel, ui.z_axis)
-        ax.normalize();
-        var v = Math.sqrt(ui.vel.norm2());
-        var W = Quat(v, ax.x(), ax.y(), ax.z());
-        for (var i = 1; i < scene.entity_buffer.length; i++) {
-            scene.entity_buffer[i].quat = QuatMult(W, scene.entity_buffer[i].quat);
-        }
-        socket.emit('move', {vel: v, x: ax.x(), y: ax.y(), z: ax.z()});
-    }, false);
+    // Hook-up UI callbacks
+    gl.canvas.addEventListener("mousedown", UI.mouse_down, false);
+    gl.canvas.addEventListener("touchstart", UI.touch_down, false);
+    document.addEventListener("mousemove", UI.mouse_move, false);
+    document.addEventListener("touchmove", UI.touch_move, false);
+    document.addEventListener("mouseup", UI.touch_or_mouse_up, false);    
+    document.addEventListener("touchend", UI.touch_or_mouse_up, false);
 
     // set some gl state
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -178,21 +62,17 @@ function main() {
     
     // timing variables
     var dt = 0.0,
-        frameTime = 0.0,
         t_prev = Date.now(),
         t_curr = Date.now();
    
-    //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); 
-    //scene.draw_all(canvas); 
-    
     // draw loop
     var tick = function() {
         t_curr = Date.now();
         dt = t_curr - t_prev;
         t_prev = t_curr;
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        scene.draw_all(canvas);
-        requestAnimationFrame(tick, canvas);
+        Scene.draw_all();
+        requestAnimationFrame(tick, gl.canvas);
     }
     tick();
 }

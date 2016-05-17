@@ -132,16 +132,10 @@ Mesh.prototype = {
     }
 }
 
-function Geometry() {
-    /* 
-        Geometry is intended to be a singleton that
-        keeps track of each mesh that has been sent to 
-        the GPU via glBufferData.
-    */
-    this.mesh_buffer = {};
-}
 
-Geometry.prototype = {
+Geometry = {
+
+    mesh_buffer: {},
 
     add_mesh: function(mesh_name, mesh_func) {
         /*
@@ -161,7 +155,7 @@ Geometry.prototype = {
         gl.bindBuffer(gl.ARRAY_BUFFER, v_buffer_id);
         gl.bufferData(gl.ARRAY_BUFFER, mesh.vertex_data, gl.STATIC_DRAW);
 
-        this.mesh_buffer[mesh_name] = {
+        Geometry.mesh_buffer[mesh_name] = {
             index_buffer_id: i_buffer_id,
             vertex_buffer_id: v_buffer_id,
             n_vertices: mesh.n_vertices,
