@@ -316,7 +316,6 @@ function InvMat4(M) {
             inv[i] = inv[i] * det;
         }
     }
-
     return I;
 }
 
